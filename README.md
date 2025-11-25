@@ -1,7 +1,7 @@
 # 🚀ChatHub - A Real-Time Chat Platform
 <div align="center">
    
-![ChatHub Logo](frontend/public/chat-hub-logo.png)
+
    
 </div>
 
