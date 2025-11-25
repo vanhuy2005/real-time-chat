@@ -1,7 +1,10 @@
 # 🚀ChatHub - A Real-Time Chat Platform
 <div align="center">
+   
 ![ChatHub Logo](frontend/public/chat-hub-logo.png)
+   
 </div>
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-18+-blue.svg)](https://reactjs.org/)
