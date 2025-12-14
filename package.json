@@ -4,13 +4,17 @@
   "description": "Full-stack Real-time Chat Application",
   "main": "index.js",
   "engines": {
-    "node": ">=18.0.0"
+    "node": "20.x"
   },
   "scripts": {
     "build": "npm install && npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
     "start": "npm run start --prefix backend"
   },
-  "keywords": ["chat", "real-time", "mern"],
+  "keywords": [
+    "chat",
+    "real-time",
+    "mern"
+  ],
   "author": "",
   "license": "ISC"
 }
