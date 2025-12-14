@@ -1,4 +1,9 @@
-# 🚀 Real-Time Chat App
+# 🚀ChatHub - A Real-Time Chat Platform
+<div align="center">
+   
+![MemoHub Logo](frontend/public/chat-hub-logo-2.png) 
+   
+</div>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
