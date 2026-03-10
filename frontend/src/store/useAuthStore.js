@@ -3,7 +3,8 @@ import { axiosInstance } from "../lib/axios.js";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 
-const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:5001" : "/";
+const BASE_URL =
+  import.meta.env.MODE === "development" ? "http://localhost:5001" : "/";
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -83,7 +84,9 @@ export const useAuthStore = create((set, get) => ({
       } else if (error.response?.status === 400) {
         toast.error(error.response.data.message || "Invalid image.");
       } else {
-        toast.error(error.response?.data?.message || "Failed to update profile.");
+        toast.error(
+          error.response?.data?.message || "Failed to update profile.",
+        );
       }
     } finally {
       set({ isUpdatingProfile: false });
@@ -97,7 +100,9 @@ export const useAuthStore = create((set, get) => ({
       set({ authUser: res.data });
       toast.success("Profile picture removed");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to remove profile picture.");
+      toast.error(
+        error.response?.data?.message || "Failed to remove profile picture.",
+      );
     } finally {
       set({ isUpdatingProfile: false });
     }

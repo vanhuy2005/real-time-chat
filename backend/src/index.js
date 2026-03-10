@@ -18,14 +18,24 @@ const __dirname = path.resolve();
 
 app.use(express.json({ limit: "2mb" }));
 app.use(cookieParser());
+
+const allowedOrigins =
+  process.env.NODE_ENV === "production"
+    ? process.env.CORS_ORIGIN
+      ? process.env.CORS_ORIGIN.split(",")
+      : []
+    : ["http://localhost:5173", "http://localhost:5174"];
+
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === "production"
-        ? true
-        : ["http://localhost:5173", "http://localhost:5174"],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (same-origin, server-to-server, etc.)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, origin);
+      callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
-  })
+  }),
 );
 
 app.use("/api/auth", authRoutes);
@@ -39,11 +49,16 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-// Global error handler — ensures CORS headers are always returned even on crashes
+// Global error handler — catches unhandled errors from routes/middleware.
+// CORS headers are provided by the cors() middleware registered above.
 app.use((err, req, res, next) => {
-  console.error("Global error:", err.message);
+  console.error("Global error:", err);
   const status = err.status || 500;
-  res.status(status).json({ message: err.message || "Internal server error" });
+  const message =
+    process.env.NODE_ENV === "development"
+      ? err.message || "Internal server error"
+      : "Internal server error";
+  res.status(status).json({ message });
 });
 
 server.listen(PORT, () => {

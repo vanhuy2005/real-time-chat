@@ -11,7 +11,9 @@ export const signup = async (req, res) => {
     }
 
     if (password.length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters" });
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters" });
     }
 
     const user = await User.findOne({ email });
@@ -95,7 +97,12 @@ export const updateProfile = async (req, res) => {
     }
 
     // Validate: must be a base64 image
-    const validMimeTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    const validMimeTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "image/gif",
+    ];
     const mimeMatch = profilePic.match(/^data:(image\/\w+);base64,/);
     if (!mimeMatch || !validMimeTypes.includes(mimeMatch[1])) {
       return res.status(400).json({
@@ -132,8 +139,20 @@ export const updateProfile = async (req, res) => {
         },
       ],
       eager: [
-        { width: 80, height: 80, crop: "fill", gravity: "face", quality: "auto" },
-        { width: 200, height: 200, crop: "fill", gravity: "face", quality: "auto" },
+        {
+          width: 80,
+          height: 80,
+          crop: "fill",
+          gravity: "face",
+          quality: "auto",
+        },
+        {
+          width: 200,
+          height: 200,
+          crop: "fill",
+          gravity: "face",
+          quality: "auto",
+        },
       ],
       eager_async: true,
     });
@@ -144,7 +163,7 @@ export const updateProfile = async (req, res) => {
         profilePic: uploadResponse.secure_url,
         profilePicId: uploadResponse.public_id,
       },
-      { new: true }
+      { new: true },
     ).select("-password");
 
     res.status(200).json(updatedUser);
@@ -171,7 +190,7 @@ export const removeProfilePic = async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { profilePic: "", profilePicId: "" },
-      { new: true }
+      { new: true },
     ).select("-password");
 
     res.status(200).json(updatedUser);

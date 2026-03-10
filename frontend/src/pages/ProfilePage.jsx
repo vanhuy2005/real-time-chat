@@ -14,7 +14,8 @@ const COMPRESSION_OPTIONS = {
 };
 
 const ProfilePage = () => {
-  const { authUser, isUpdatingProfile, updateProfile, removeProfilePic } = useAuthStore();
+  const { authUser, isUpdatingProfile, updateProfile, removeProfilePic } =
+    useAuthStore();
   const [selectedImg, setSelectedImg] = useState(null);
 
   const hasCustomAvatar = selectedImg || authUser?.profilePic;
@@ -146,7 +147,9 @@ const ProfilePage = () => {
                 <User className="w-4 h-4" />
                 Full Name
               </div>
-              <p className="px-4 py-2.5 bg-base-200 rounded-lg border">{authUser?.fullName}</p>
+              <p className="px-4 py-2.5 bg-base-200 rounded-lg border">
+                {authUser?.fullName}
+              </p>
             </div>
 
             <div className="space-y-1.5">
@@ -154,7 +157,9 @@ const ProfilePage = () => {
                 <Mail className="w-4 h-4" />
                 Email Address
               </div>
-              <p className="px-4 py-2.5 bg-base-200 rounded-lg border">{authUser?.email}</p>
+              <p className="px-4 py-2.5 bg-base-200 rounded-lg border">
+                {authUser?.email}
+              </p>
             </div>
           </div>
 

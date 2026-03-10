@@ -1,12 +1,18 @@
 const sizeMap = {
-  xs: "size-8",    // 32px  — Navbar
-  sm: "size-10",   // 40px  — ChatHeader, ChatContainer
-  md: "size-12",   // 48px  — Sidebar
-  lg: "size-20",   // 80px  — Medium displays
-  xl: "size-32",   // 128px — ProfilePage
+  xs: "size-8", // 32px  — Navbar
+  sm: "size-10", // 40px  — ChatHeader, ChatContainer
+  md: "size-12", // 48px  — Sidebar
+  lg: "size-20", // 80px  — Medium displays
+  xl: "size-32", // 128px — ProfilePage
 };
 
-const Avatar = ({ src, alt = "Avatar", size = "sm", online, className = "" }) => {
+const Avatar = ({
+  src,
+  alt = "Avatar",
+  size = "sm",
+  online,
+  className = "",
+}) => {
   return (
     <div className={`relative ${className}`}>
       <img
