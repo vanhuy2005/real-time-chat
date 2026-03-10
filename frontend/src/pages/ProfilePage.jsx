@@ -1,24 +1,64 @@
 import { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
-import { Camera, Mail, User } from "lucide-react";
+import { Camera, Mail, User, Trash2 } from "lucide-react";
+import toast from "react-hot-toast";
+import imageCompression from "browser-image-compression";
+import Avatar from "../components/Avatar";
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB before compression
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const COMPRESSION_OPTIONS = {
+  maxSizeMB: 1,
+  maxWidthOrHeight: 1024,
+  useWebWorker: true,
+};
 
 const ProfilePage = () => {
-  const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
+  const { authUser, isUpdatingProfile, updateProfile, removeProfilePic } = useAuthStore();
   const [selectedImg, setSelectedImg] = useState(null);
+
+  const hasCustomAvatar = selectedImg || authUser?.profilePic;
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
+    // Client-side validation: file type
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      toast.error("Invalid file type. Please upload JPEG, PNG, WebP, or GIF.");
+      e.target.value = "";
+      return;
+    }
 
-    reader.readAsDataURL(file);
+    // Client-side validation: file size
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error("File too large. Maximum 5MB allowed.");
+      e.target.value = "";
+      return;
+    }
 
-    reader.onload = async () => {
-      const base64Image = reader.result;
-      setSelectedImg(base64Image);
-      await updateProfile({ profilePic: base64Image });
-    };
+    try {
+      // Client-side compression
+      const compressedFile = await imageCompression(file, COMPRESSION_OPTIONS);
+
+      // Convert to base64
+      const reader = new FileReader();
+      reader.readAsDataURL(compressedFile);
+
+      reader.onload = async () => {
+        const base64Image = reader.result;
+        setSelectedImg(base64Image);
+        await updateProfile({ profilePic: base64Image });
+      };
+
+      reader.onerror = () => {
+        toast.error("Failed to read image file.");
+      };
+    } catch (error) {
+      toast.error("Failed to process image. Please try another.");
+    }
+
+    e.target.value = "";
   };
 
   return (
@@ -34,10 +74,11 @@ const ProfilePage = () => {
 
           <div className="flex flex-col items-center gap-4">
             <div className="relative">
-              <img
-                src={selectedImg || authUser.profilePic || "/avatar.png"}
+              <Avatar
+                src={selectedImg || authUser.profilePic}
                 alt="Profile"
-                className="size-32 rounded-full object-cover border-4 "
+                size="xl"
+                className="border-4"
               />
               <label
                 htmlFor="avatar-upload"
@@ -54,14 +95,48 @@ const ProfilePage = () => {
                   type="file"
                   id="avatar-upload"
                   className="hidden"
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
                   onChange={handleImageUpload}
                   disabled={isUpdatingProfile}
                 />
               </label>
             </div>
-            <p className="text-sm text-zinc-400">
-              {isUpdatingProfile ? "Uploading..." : "Click the camera icon to update your photo"}
+
+            {/* Action buttons */}
+            <div className="flex items-center gap-3">
+              <label
+                htmlFor="avatar-upload-btn"
+                className={`btn btn-sm btn-outline gap-2 ${isUpdatingProfile ? "btn-disabled" : ""}`}
+              >
+                <Camera className="w-4 h-4" />
+                {isUpdatingProfile ? "Uploading..." : "Change photo"}
+                <input
+                  type="file"
+                  id="avatar-upload-btn"
+                  className="hidden"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  onChange={handleImageUpload}
+                  disabled={isUpdatingProfile}
+                />
+              </label>
+
+              {hasCustomAvatar && (
+                <button
+                  className={`btn btn-sm btn-ghost text-error gap-2 ${isUpdatingProfile ? "btn-disabled" : ""}`}
+                  onClick={async () => {
+                    setSelectedImg(null);
+                    await removeProfilePic();
+                  }}
+                  disabled={isUpdatingProfile}
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Remove
+                </button>
+              )}
+            </div>
+
+            <p className="text-xs text-zinc-500">
+              JPEG, PNG, WebP or GIF — max 5 MB
             </p>
           </div>
 

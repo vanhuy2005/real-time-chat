@@ -36,7 +36,7 @@ export const useAuthStore = create((set, get) => ({
       toast.success("Account created successfully");
       get().connectSocket();
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong");
     } finally {
       set({ isSigningUp: false });
     }
@@ -51,7 +51,7 @@ export const useAuthStore = create((set, get) => ({
 
       get().connectSocket();
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong");
     } finally {
       set({ isLoggingIn: false });
     }
@@ -64,7 +64,7 @@ export const useAuthStore = create((set, get) => ({
       toast.success("Logged out successfully");
       get().disconnectSocket();
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong");
     }
   },
 
@@ -76,7 +76,28 @@ export const useAuthStore = create((set, get) => ({
       toast.success("Profile updated successfully");
     } catch (error) {
       console.log("error in update profile:", error);
-      toast.error(error.response.data.message);
+      if (error.code === "ERR_NETWORK") {
+        toast.error("Network error. Please check your connection.");
+      } else if (error.response?.status === 413) {
+        toast.error("Image too large. Please choose a smaller image.");
+      } else if (error.response?.status === 400) {
+        toast.error(error.response.data.message || "Invalid image.");
+      } else {
+        toast.error(error.response?.data?.message || "Failed to update profile.");
+      }
+    } finally {
+      set({ isUpdatingProfile: false });
+    }
+  },
+
+  removeProfilePic: async () => {
+    set({ isUpdatingProfile: true });
+    try {
+      const res = await axiosInstance.delete("/auth/profile-pic");
+      set({ authUser: res.data });
+      toast.success("Profile picture removed");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to remove profile picture.");
     } finally {
       set({ isUpdatingProfile: false });
     }

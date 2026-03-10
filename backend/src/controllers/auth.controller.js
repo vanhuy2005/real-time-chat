@@ -94,16 +94,89 @@ export const updateProfile = async (req, res) => {
       return res.status(400).json({ message: "Profile pic is required" });
     }
 
-    const uploadResponse = await cloudinary.uploader.upload(profilePic);
+    // Validate: must be a base64 image
+    const validMimeTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    const mimeMatch = profilePic.match(/^data:(image\/\w+);base64,/);
+    if (!mimeMatch || !validMimeTypes.includes(mimeMatch[1])) {
+      return res.status(400).json({
+        message: "Invalid image format. Accepted: JPEG, PNG, WebP, GIF",
+      });
+    }
+
+    // Validate: check base64 size
+    const base64Data = profilePic.split(",")[1];
+    const sizeInBytes = Buffer.byteLength(base64Data, "base64");
+    const maxSize = 2 * 1024 * 1024; // 2MB
+    if (sizeInBytes > maxSize) {
+      return res.status(413).json({ message: "Image too large. Max 2MB." });
+    }
+
+    // Delete old image on Cloudinary if exists
+    const currentUser = await User.findById(userId);
+    if (currentUser.profilePicId) {
+      await cloudinary.uploader.destroy(currentUser.profilePicId);
+    }
+
+    // Upload with transformation (Facebook-style face detection crop)
+    const uploadResponse = await cloudinary.uploader.upload(profilePic, {
+      folder: "chat-app/avatars",
+      public_id: `${userId}_${Date.now()}`,
+      overwrite: true,
+      transformation: [
+        {
+          width: 500,
+          height: 500,
+          crop: "fill",
+          gravity: "face",
+          quality: "auto",
+        },
+      ],
+      eager: [
+        { width: 80, height: 80, crop: "fill", gravity: "face", quality: "auto" },
+        { width: 200, height: 200, crop: "fill", gravity: "face", quality: "auto" },
+      ],
+      eager_async: true,
+    });
+
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { profilePic: uploadResponse.secure_url },
+      {
+        profilePic: uploadResponse.secure_url,
+        profilePicId: uploadResponse.public_id,
+      },
       { new: true }
-    );
+    ).select("-password");
 
     res.status(200).json(updatedUser);
   } catch (error) {
     console.log("error in update profile:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const removeProfilePic = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const currentUser = await User.findById(userId);
+
+    if (!currentUser.profilePic) {
+      return res.status(400).json({ message: "No profile picture to remove" });
+    }
+
+    // Delete from Cloudinary
+    if (currentUser.profilePicId) {
+      await cloudinary.uploader.destroy(currentUser.profilePicId);
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { profilePic: "", profilePicId: "" },
+      { new: true }
+    ).select("-password");
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.log("error in remove profile pic:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

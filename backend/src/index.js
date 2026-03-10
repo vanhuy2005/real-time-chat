@@ -16,11 +16,14 @@ dotenv.config();
 const PORT = process.env.PORT;
 const __dirname = path.resolve();
 
-app.use(express.json());
+app.use(express.json({ limit: "2mb" }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin:
+      process.env.NODE_ENV === "production"
+        ? true
+        : ["http://localhost:5173", "http://localhost:5174"],
     credentials: true,
   })
 );
@@ -35,6 +38,13 @@ if (process.env.NODE_ENV === "production") {
     res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
   });
 }
+
+// Global error handler — ensures CORS headers are always returned even on crashes
+app.use((err, req, res, next) => {
+  console.error("Global error:", err.message);
+  const status = err.status || 500;
+  res.status(status).json({ message: err.message || "Internal server error" });
+});
 
 server.listen(PORT, () => {
   console.log("server is running on PORT:" + PORT);
