@@ -9,16 +9,24 @@ const HomePage = () => {
 
   return (
     <div className="h-screen bg-base-200">
-      <div className="flex items-center justify-center pt-20 px-4">
-        <div className="bg-base-100 rounded-lg shadow-cl w-full max-w-6xl h-[calc(100vh-8rem)]">
-          <div className="flex h-full rounded-lg overflow-hidden">
+      <div className="flex items-center justify-center pt-16 sm:pt-20 px-0 sm:px-4">
+        {/* Main Application Window */}
+        <div className="glass-panel rounded-none sm:rounded-2xl w-full max-w-6xl h-[calc(100vh-4rem)] sm:h-[calc(100vh-6rem)] overflow-hidden flex">
+          
+          {/* Sidebar Area: Visible if no user is selected OR on screens md and up */}
+          <div className={`w-full md:w-80 flex-shrink-0 border-r border-base-300 md:block ${selectedUser ? "hidden" : "block"}`}>
             <Sidebar />
+          </div>
 
+          {/* Chat Container / Empty State Area: Visible if user IS selected OR on screens md and up */}
+          <div className={`flex-1 flex flex-col md:flex ${!selectedUser ? "hidden md:flex" : "flex"}`}>
             {!selectedUser ? <NoChatSelected /> : <ChatContainer />}
           </div>
+          
         </div>
       </div>
     </div>
   );
 };
+
 export default HomePage;

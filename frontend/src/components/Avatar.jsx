@@ -1,9 +1,11 @@
-const sizeMap = {
-  xs: "size-8", // 32px  — Navbar
-  sm: "size-10", // 40px  — ChatHeader, ChatContainer
-  md: "size-12", // 48px  — Sidebar
-  lg: "size-20", // 80px  — Medium displays
-  xl: "size-32", // 128px — ProfilePage
+import { getAvatarUrl } from "../lib/cloudinary";
+
+const SIZE_CONFIG = {
+  xs: { px: 28, cloudinary: 64 },   // Navbar (28px fits well in btn-sm)
+  sm: { px: 40, cloudinary: 80 },   // ChatHeader, ChatContainer
+  md: { px: 48, cloudinary: 96 },   // Sidebar
+  lg: { px: 80, cloudinary: 200 },  // Medium displays
+  xl: { px: 128, cloudinary: 500 }, // ProfilePage
 };
 
 const Avatar = ({
@@ -13,12 +15,18 @@ const Avatar = ({
   online,
   className = "",
 }) => {
+  const config = SIZE_CONFIG[size] || SIZE_CONFIG.sm;
+  const optimizedSrc = src ? getAvatarUrl(src, config.cloudinary) : "/avatar.png";
+
   return (
-    <div className={`relative ${className}`}>
+    <div 
+      className={`relative flex-shrink-0 ${className}`}
+      style={{ width: config.px, height: config.px }}
+    >
       <img
-        src={src || "/avatar.png"}
+        src={optimizedSrc}
         alt={alt}
-        className={`${sizeMap[size]} rounded-full object-cover border`}
+        className="w-full h-full rounded-full object-cover border"
         onError={(e) => {
           e.target.src = "/avatar.png";
         }}

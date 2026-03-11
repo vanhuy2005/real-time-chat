@@ -1,3 +1,52 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --font-heading: 'Quicksand', 'Comfortaa', system-ui, sans-serif;
+    --font-body: 'Comfortaa', 'Quicksand', system-ui, sans-serif;
+  }
+
+  body {
+    font-family: var(--font-body);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
+}
+
+@layer components {
+  /* Bubbly Glassmorphism Utilities */
+  .glass-panel {
+    @apply bg-base-100/60 backdrop-blur-md border border-white/5 shadow-sm;
+  }
+
+  .icon-bubble {
+    @apply flex items-center justify-center rounded-xl bg-primary/10 backdrop-blur-sm p-2 transition-all duration-200;
+  }
+
+  .icon-bubble:hover {
+    @apply bg-primary/20 scale-105;
+  }
+
+  .icon-bubble:active {
+    @apply scale-95;
+  }
+
+  /* Chat Bubbles (iMessage Style) */
+  .bubble-sent {
+    @apply rounded-[20px_20px_4px_20px];
+  }
+
+  .bubble-received {
+    @apply rounded-[20px_20px_20px_4px];
+  }
+}
+
+/* Avatar display fix — prevent DaisyUI overrides */
+.chat-image img {
+  max-width: 100% !important;
+  max-height: 100% !important;
+}

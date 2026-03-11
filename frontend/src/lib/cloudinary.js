@@ -10,10 +10,3 @@ export const getAvatarUrl = (url, size = 200) => {
   );
 };
 
-export const avatarSizes = {
-  xs: 64, // Navbar
-  sm: 80, // Chat bubbles
-  md: 96, // Sidebar
-  lg: 200, // Medium displays
-  xl: 500, // Profile page (full quality)
-};
