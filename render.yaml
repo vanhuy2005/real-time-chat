@@ -7,7 +7,7 @@ services:
     plan: free
     buildCommand: npm run build
     startCommand: npm start
-    healthCheckPath: /api/auth/check
+    healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
@@ -22,4 +22,6 @@ services:
       - key: CLOUDINARY_API_SECRET
         sync: false
       - key: CLIENT_URL
-        sync: false
+        value: https://real-time-chat-v1.onrender.com
+      - key: CORS_ORIGIN
+        value: https://real-time-chat-v1.onrender.com
