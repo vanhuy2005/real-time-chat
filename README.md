@@ -1,16 +1,35 @@
-
-
-
-
 # ChatHub - Tạo Tài Khoản Nhắn Tin Ngay 
 <div align="center">
 <img src="./frontend/public/chat-hub-logo-2.png" alt="ChatHub Logo" width="400" />
 </div>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
-[![React](https://img.shields.io/badge/React-18+-blue.svg)](https://reactjs.org/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-8+-green.svg)](https://www.mongodb.com/)
+<p align="center">
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+  <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-339933?logo=nodedotjs&logoColor=white" alt="Node.js"></a>
+  <a href="https://expressjs.com/"><img src="https://img.shields.io/badge/Express.js-000000?logo=express&logoColor=white" alt="Express.js"></a>
+  <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black" alt="React"></a>
+  <a href="https://www.mongodb.com/"><img src="https://img.shields.io/badge/MongoDB-47A248?logo=mongodb&logoColor=white" alt="MongoDB"></a>
+  <a href="https://socket.io/"><img src="https://img.shields.io/badge/Socket.io-010101?logo=socketdotio&logoColor=white" alt="Socket.io"></a>
+  <a href="https://redis.io/"><img src="https://img.shields.io/badge/Redis-DC382D?logo=redis&logoColor=white" alt="Redis"></a>
+  <a href="https://webrtc.org/"><img src="https://img.shields.io/badge/WebRTC-333333?logo=webrtc&logoColor=white" alt="WebRTC"></a>
+</p>
+<p align="center">
+  <a href="https://firebase.google.com/"><img src="https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black" alt="Firebase"></a>
+  <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/TailwindCSS-06B6D4?logo=tailwindcss&logoColor=white" alt="Tailwind CSS"></a>
+  <a href="https://daisyui.com/"><img src="https://img.shields.io/badge/DaisyUI-5A0EF8?logo=css3&logoColor=white" alt="DaisyUI"></a>
+  <a href="https://vitejs.dev/"><img src="https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white" alt="Vite"></a>
+  <a href="https://zustand-demo.pmnd.rs/"><img src="https://img.shields.io/badge/Zustand-Bear-orange" alt="Zustand"></a>
+</p>
+---
+
+## 📑 Mục lục nhanh (Quick Links)
+- 🏗️ [Toàn bộ thông tin về hệ thống](./docs/structure/structure.md)
+- 🎨 [Brand Guidelines của dự án](./docs/brand-guidelines/UI-UX-guidelines.md)
+- 📞 [Các feature đang và có thể đã dev hoàn thiện](./docs/features/)
+-    [Cách đảm bảo chất lượng code](./docs/test/)
+- 💻 [Mã nguồn Frontend](./frontend/src/)
+- ⚙️ [Mã nguồn Backend](./backend/src/)
+
 ---
 
 ## ChatHub là gì?
@@ -79,14 +98,22 @@ Vậy là xong! Hãy truy cập vào http://localhost:5173 và bắt đầu cu�
 - **Zustand** - State management
 - **Axios** - HTTP client
 - **Socket.io-client** - Real-time communication
+- **WebRTC** - Peer-to-peer (P2P) Audio/Video Streaming
+- **Vitest & React Testing Library** - Component & Store Unit Testing
 
 ### Backend
 
 - **Node.js** - Runtime environment
 - **Express.js** - Web framework
+- **Jest & Supertest** - API Integration Testing & Mocking
+- **MongoDB Memory Server** - In-memory Database for Testing
 - **MongoDB** - NoSQL database
 - **Mongoose** - ODM for MongoDB
 - **Socket.io** - Real-time bidirectional communication
+- **@socket.io/redis-adapter** - Multi-instance clustering
+- **Upstash Redis** - Caching, Pub/Sub, Rate-limiting
+- **node-cron** - Background garbage collection & ping keep-alive
+- **Firebase Admin SDK** - Web push notifications
 - **JWT** - JSON Web Tokens for authentication
 - **bcryptjs** - Password hashing
 - **Cloudinary** - Image hosting and manipulation
@@ -136,6 +163,10 @@ Vậy là xong! Hãy truy cập vào http://localhost:5173 và bắt đầu cu�
    CLOUDINARY_CLOUD_NAME=your_cloud_name
    CLOUDINARY_API_KEY=your_api_key
    CLOUDINARY_API_SECRET=your_api_secret
+   REDIS_URL=redis://localhost:6379
+   METERED_API_KEY=your_metered_turn_server_api_key
+   METERED_DOMAIN=chathub.metered.live
+   FIREBASE_SERVICE_ACCOUNT={"type":"service_account",...}
    NODE_ENV=development
    ```
 
@@ -174,33 +205,6 @@ Vậy là xong! Hãy truy cập vào http://localhost:5173 và bắt đầu cu�
 5. **Access the app**
    - Frontend: [http://localhost:5173](http://localhost:5173)
    - Backend API: [http://localhost:5001](http://localhost:5001)
-
-## Cấu trúc dự án 
-
-```bash
-fullstack-chat-app/
-├── backend/
-│   ├── src/
-│   │   ├── controllers/
-│   │   ├── lib/
-│   │   ├── middleware/
-│   │   ├── models/
-│   │   ├── routes/
-│   │   └── index.js
-│   ├── package.json
-│   └── .env
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── store/
-│   │   └── lib/
-│   ├── public/
-│   ├── package.json
-│   └── .env
-├── package.json
-└── README.md
-```
 
 ## 🤝 Đóng góp
 

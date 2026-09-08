@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { axiosInstance } from "../lib/axios.js";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
+import { useCallStore } from "./useCallStore.js";
+import { requestNotificationPermissionAndGetToken } from "../lib/firebase.js";
 
 const BASE_URL =
   import.meta.env.MODE === "development" ? "http://localhost:5001" : "/";
@@ -14,6 +16,7 @@ export const useAuthStore = create((set, get) => ({
   isCheckingAuth: true,
   onlineUsers: [],
   socket: null,
+  fcmToken: null,
 
   checkAuth: async () => {
     try {
@@ -21,6 +24,16 @@ export const useAuthStore = create((set, get) => ({
 
       set({ authUser: res.data });
       get().connectSocket();
+
+      // Setup push notifications
+      try {
+         const token = await requestNotificationPermissionAndGetToken();
+         if (token) {
+            set({ fcmToken: token });
+            await axiosInstance.post("/auth/fcm-token", { fcmToken: token }).catch(console.error);
+         }
+      } catch(e) { console.error("Push Notification setup failed", e); }
+      
     } catch (error) {
       console.log("Error in checkAuth:", error);
       set({ authUser: null });
@@ -36,6 +49,15 @@ export const useAuthStore = create((set, get) => ({
       set({ authUser: res.data });
       toast.success("Account created successfully");
       get().connectSocket();
+
+      // Setup push notifications
+      try {
+         const token = await requestNotificationPermissionAndGetToken();
+         if (token) {
+            set({ fcmToken: token });
+            await axiosInstance.post("/auth/fcm-token", { fcmToken: token }).catch(console.error);
+         }
+      } catch(e) { console.error("Push Notification setup failed", e); }
     } catch (error) {
       toast.error(error.response?.data?.message || "Something went wrong");
     } finally {
@@ -51,6 +73,16 @@ export const useAuthStore = create((set, get) => ({
       toast.success("Logged in successfully");
 
       get().connectSocket();
+
+      // Setup push notifications
+      try {
+         const token = await requestNotificationPermissionAndGetToken();
+         if (token) {
+            set({ fcmToken: token });
+            await axiosInstance.post("/auth/fcm-token", { fcmToken: token }).catch(console.error);
+         }
+      } catch(e) { console.error("Push Notification setup failed", e); }
+      
     } catch (error) {
       toast.error(error.response?.data?.message || "Something went wrong");
     } finally {
@@ -60,6 +92,10 @@ export const useAuthStore = create((set, get) => ({
 
   logout: async () => {
     try {
+      if (get().fcmToken) {
+         await axiosInstance.delete("/auth/fcm-token", { data: { fcmToken: get().fcmToken } }).catch(console.error);
+         set({ fcmToken: null });
+      }
       await axiosInstance.post("/auth/logout");
       set({ authUser: null });
       toast.success("Logged out successfully");
@@ -121,11 +157,19 @@ export const useAuthStore = create((set, get) => ({
 
     set({ socket: socket });
 
+    // Attach call listeners now that socket is ready
+    useCallStore.getState().subscribeToCallEvents();
+
     socket.on("getOnlineUsers", (userIds) => {
       set({ onlineUsers: userIds });
     });
   },
+  
   disconnectSocket: () => {
-    if (get().socket?.connected) get().socket.disconnect();
+    if (get().socket?.connected) {
+      // Clean up call listeners before disconnecting
+      useCallStore.getState().unsubscribeFromCallEvents();
+      get().socket.disconnect();
+    }
   },
 }));

@@ -208,3 +208,44 @@ export const checkAuth = (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+export const saveFcmToken = async (req, res) => {
+  try {
+    const { fcmToken } = req.body;
+    const userId = req.user._id;
+
+    if (!fcmToken) {
+      return res.status(400).json({ message: "FCM token is required" });
+    }
+
+    // Use $addToSet to only add the token if it doesn't already exist in the array
+    await User.findByIdAndUpdate(userId, {
+      $addToSet: { fcmTokens: fcmToken }
+    });
+
+    res.status(200).json({ message: "FCM Token saved successfully" });
+  } catch (error) {
+    console.log("Error in saveFcmToken controller", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const removeFcmToken = async (req, res) => {
+  try {
+     const { fcmToken } = req.body;
+     const userId = req.user._id;
+
+     if (!fcmToken) {
+       return res.status(400).json({ message: "FCM token is required to remove" });
+     }
+
+     await User.findByIdAndUpdate(userId, {
+        $pull: { fcmTokens: fcmToken }
+     });
+
+     res.status(200).json({ message: "FCM Token removed successfully" });
+  } catch (error) {
+     console.log("Error in removeFcmToken controller", error.message);
+     res.status(500).json({ message: "Internal Server Error" });
+  }
+};

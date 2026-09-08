@@ -9,9 +9,14 @@ import { connectDB } from "./lib/db.js";
 
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
+import callRoutes from "./routes/call.route.js";
 import { app, server } from "./lib/socket.js";
+import "./lib/redis.js";
+import { initGhostCallCleanupCron, initSelfPing } from "./lib/cron.js";
 
 dotenv.config();
+initGhostCallCleanupCron();
+initSelfPing();
 
 const PORT = process.env.PORT;
 const __dirname = path.resolve();
@@ -40,6 +45,12 @@ app.use(
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/calls", callRoutes);
+
+// Health check endpoint (prevents Render cold start, used by self-ping)
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok", uptime: Math.floor(process.uptime()) });
+});
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
@@ -48,6 +59,8 @@ if (process.env.NODE_ENV === "production") {
     res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
   });
 }
+
+// Trigger nodemon restart 1
 
 // Global error handler — catches unhandled errors from routes/middleware.
 // CORS headers are provided by the cors() middleware registered above.

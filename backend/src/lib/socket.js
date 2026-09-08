@@ -1,6 +1,9 @@
 import { Server } from "socket.io";
 import http from "http";
 import express from "express";
+import { registerCallHandlers } from "./call.socket.js";
+import { createAdapter } from "@socket.io/redis-adapter";
+import { Redis } from "ioredis";
 
 const app = express();
 const server = http.createServer(app);
@@ -11,6 +14,18 @@ const io = new Server(server, {
     credentials: true,
   },
 });
+
+// Redis adapter for multi-instance Socket.IO (transparent for single instance)
+if (process.env.REDIS_URL) {
+  try {
+    const pubClient = new Redis(process.env.REDIS_URL);
+    const subClient = pubClient.duplicate();
+    io.adapter(createAdapter(pubClient, subClient));
+    console.log("✅ Socket.IO Redis adapter connected (multi-instance ready)");
+  } catch (e) {
+    console.warn("⚠️ Socket.IO Redis adapter failed, running single-instance:", e.message);
+  }
+}
 
 export function getReceiverSocketId(userId) {
   return userSocketMap[userId];
@@ -24,6 +39,9 @@ io.on("connection", (socket) => {
 
   const userId = socket.handshake.query.userId;
   if (userId) userSocketMap[userId] = socket.id;
+
+  // Register WebRTC Call Handlers
+  registerCallHandlers(io, socket, userSocketMap);
 
   // io.emit() is used to send events to all the connected clients
   io.emit("getOnlineUsers", Object.keys(userSocketMap));

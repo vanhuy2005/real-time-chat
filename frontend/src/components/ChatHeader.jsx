@@ -1,11 +1,13 @@
-import { X, ArrowLeft } from "lucide-react";
+import { X, ArrowLeft, Phone, Video } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
+import { useCallStore } from "../store/useCallStore";
 import Avatar from "./Avatar";
 
 const ChatHeader = () => {
   const { selectedUser, setSelectedUser } = useChatStore();
   const { onlineUsers } = useAuthStore();
+  const { initiateCall } = useCallStore();
 
   return (
     <div className="p-3 sm:p-4 border-b border-white/5 bg-base-100/40 backdrop-blur-sm z-10 shadow-sm">
@@ -43,13 +45,31 @@ const ChatHeader = () => {
           </div>
         </div>
 
-        {/* Close button (Desktop only) */}
-        <button 
-          onClick={() => setSelectedUser(null)}
-          className="hidden sm:flex icon-bubble bg-transparent hover:bg-base-300 p-2"
-        >
-          <X className="size-5" />
-        </button>
+        {/* Action buttons */}
+        <div className="flex items-center gap-2">
+           <button 
+             onClick={() => initiateCall(selectedUser, 'voice')}
+             className="icon-bubble bg-transparent hover:bg-base-300 p-2 text-primary"
+             title="Cuộc gọi thoại"
+           >
+             <Phone className="size-5" />
+           </button>
+           <button 
+             onClick={() => initiateCall(selectedUser, 'video')}
+             className="icon-bubble bg-transparent hover:bg-base-300 p-2 text-secondary"
+             title="Cuộc gọi video"
+           >
+             <Video className="size-5 border-2 rounded-md p-0.5 border-current" />
+           </button>
+           
+          {/* Close button (Desktop only) */}
+          <button 
+            onClick={() => setSelectedUser(null)}
+            className="hidden sm:flex icon-bubble bg-transparent hover:bg-base-300 p-2 ml-2"
+          >
+            <X className="size-5" />
+          </button>
+        </div>
       </div>
     </div>
   );

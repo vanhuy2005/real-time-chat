@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
-import { Camera, Mail, User, Trash2, ShieldCheck, CalendarClock } from "lucide-react";
+import { Camera, Mail, User, Trash2, ShieldCheck, CalendarClock, Phone } from "lucide-react";
 import toast from "react-hot-toast";
 import imageCompression from "browser-image-compression";
 import Avatar from "../components/Avatar";
+import CallHistory from "../components/CallHistory";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB before compression
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
@@ -188,6 +189,14 @@ const ProfilePage = () => {
             </div>
           </div>
           
+          <div className="mt-8 bg-base-200/30 backdrop-blur-md rounded-2xl border border-white/5 p-5 sm:p-6">
+            <h2 className="text-[15px] font-bold mb-4 flex items-center gap-2">
+              <Phone className="w-5 h-5 text-primary" />
+              Lịch sử cuộc gọi gần đây
+            </h2>
+            <CallHistory />
+          </div>
+
         </div>
       </div>
     </div>
