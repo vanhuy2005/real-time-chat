@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 
 import path from "path";
+import { fileURLToPath } from "url";
 
 import { connectDB } from "./lib/db.js";
 
@@ -19,7 +20,8 @@ initGhostCallCleanupCron();
 initSelfPing();
 
 const PORT = process.env.PORT;
-const __dirname = path.resolve();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const projectRoot = path.resolve(__dirname, "..", "..");
 
 app.use(express.json({ limit: "2mb" }));
 app.use(cookieParser());
@@ -53,7 +55,7 @@ app.get("/api/health", (req, res) => {
 });
 
 if (process.env.NODE_ENV === "production") {
-  const frontendDistPath = path.join(__dirname, "frontend", "dist");
+  const frontendDistPath = path.join(projectRoot, "frontend", "dist");
 
   app.use(express.static(frontendDistPath));
 
