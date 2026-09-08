@@ -1,10 +1,10 @@
 import express from "express";
-import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
 import path from "path";
 import { fileURLToPath } from "url";
+import { getAllowedOrigins, normalizeOrigin } from "./lib/cors.js";
 
 import { connectDB } from "./lib/db.js";
 
@@ -15,7 +15,6 @@ import { app, server } from "./lib/socket.js";
 import "./lib/redis.js";
 import { initGhostCallCleanupCron, initSelfPing } from "./lib/cron.js";
 
-dotenv.config();
 initGhostCallCleanupCron();
 initSelfPing();
 
@@ -26,19 +25,16 @@ const projectRoot = path.resolve(__dirname, "..", "..");
 app.use(express.json({ limit: "2mb" }));
 app.use(cookieParser());
 
-const allowedOrigins =
-  process.env.NODE_ENV === "production"
-    ? process.env.CORS_ORIGIN
-      ? process.env.CORS_ORIGIN.split(",")
-      : []
-    : ["http://localhost:5173", "http://localhost:5174"];
+const allowedOrigins = getAllowedOrigins();
 
 app.use(
   cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (same-origin, server-to-server, etc.)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, origin);
+      if (allowedOrigins.includes(normalizeOrigin(origin))) {
+        return callback(null, origin);
+      }
       callback(new Error("Not allowed by CORS"));
     },
     credentials: true,

@@ -4,13 +4,14 @@ import express from "express";
 import { registerCallHandlers } from "./call.socket.js";
 import { createAdapter } from "@socket.io/redis-adapter";
 import { Redis } from "ioredis";
+import { getAllowedOrigins } from "./cors.js";
 
 const app = express();
 const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: getAllowedOrigins(),
     credentials: true,
   },
 });
